@@ -233,11 +233,6 @@ main {
   font-size: 1.05rem;
 }
 
-.qr-desc {
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-
 #qrImage {
   display: block;
   margin: 12px auto;
