@@ -6,7 +6,6 @@ const CONFIG = {
 
 // 설문(구글폼 등) 링크. 만들었다면 이 값을 실제 주소로 바꾸세요.
 const FEEDBACK_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc9eFweJns7M0HuS3N2dBDx8uKk9afu00E7-dee7DY2oc-c_Q/viewform?usp=publish-editor";
-
 const ALLERGY_MAP = {
   1: "난류(계란)",
   2: "우유",
