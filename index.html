@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>동성고등학교 급식 알리미</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>🍽️ 동성고등학교 급식 알리미</h1>
+    <button id="settingsBtn" class="icon-btn" aria-label="알레르기 설정">⚙️ 알레르기 설정</button>
+  </header>
+
+  <main>
+    <section class="view-tabs">
+      <button id="dayViewBtn" class="tab-btn active">하루씩 보기</button>
+      <button id="weekViewBtn" class="tab-btn">이번 주 보기 (~수요일)</button>
+    </section>
+
+    <section id="dateNav" class="date-nav">
+      <button id="prevDayBtn" class="nav-btn">◀ 어제</button>
+      <input type="date" id="dateInput" />
+      <button id="nextDayBtn" class="nav-btn">내일 ▶</button>
+      <button id="todayBtn" class="nav-btn today-btn">오늘</button>
+    </section>
+
+    <section id="allergyWarning" class="allergy-warning hidden"></section>
+
+    <section id="mealContainer" class="meal-container">
+      <p class="loading">급식 정보를 불러오는 중입니다...</p>
+    </section>
+
+    <section class="qr-section">
+      <h2>📱 이 페이지 QR코드</h2>
+      <p class="qr-desc">친구들에게 이 QR코드를 보여주면 바로 접속할 수 있어요.</p>
+      <img id="qrImage" alt="현재 페이지 접속 QR코드" width="200" height="200" />
+      <p id="qrUrl" class="qr-url"></p>
+    </section>
+
+    <section class="feedback-section">
+      <h2>💬 의견 남기기</h2>
+      <p>
+        사용하면서 불편한 점이나 개선 아이디어가 있다면 아래 설문에 남겨주세요.
+      </p>
+      <a id="feedbackLink" href="#" target="_blank" rel="noopener noreferrer" class="feedback-btn">설문 참여하기</a>
+      <p class="feedback-note">
+        * 설문 링크는 <code>script.js</code> 상단의 <code>FEEDBACK_FORM_URL</code> 값을 구글폼 주소로 바꿔서 사용하세요.
+      </p>
+    </section>
+  </main>
+
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>내 알레르기 정보 설정</h2>
+      <p class="modal-desc">해당하는 항목을 체크하면, 급식 메뉴에 포함된 경우 빨간색으로 표시돼요.</p>
+      <div id="allergyList" class="allergy-list"></div>
+      <div class="modal-actions">
+        <button id="saveAllergyBtn" class="primary-btn">저장</button>
+        <button id="closeModalBtn" class="secondary-btn">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>급식 데이터 출처: 나이스(NEIS) 교육정보 개방 포털 · 서울특별시교육청 동성고등학교</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
