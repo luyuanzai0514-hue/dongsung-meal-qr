@@ -8,58 +8,61 @@
 </head>
 <body>
   <header class="app-header">
-    <h1>🍽️ 동성고등학교 급식 알리미</h1>
-    <button id="settingsBtn" class="icon-btn" aria-label="알레르기 설정">⚙️ 알레르기 설정</button>
+    <h1 data-i18n="headerTitle">🍽️ 동성고등학교 급식 알리미</h1>
+    <div class="header-actions">
+      <button id="langBtn" class="icon-btn" aria-label="언어 변경 / Сменить язык"></button>
+      <button id="settingsBtn" class="icon-btn" data-i18n="settingsBtn" aria-label="알레르기 설정">⚙️ 알레르기 설정</button>
+    </div>
   </header>
 
   <main>
     <section class="view-tabs">
-      <button id="dayViewBtn" class="tab-btn active">하루씩 보기</button>
-      <button id="weekViewBtn" class="tab-btn">이번 주 보기 (~수요일)</button>
+      <button id="dayViewBtn" class="tab-btn active" data-i18n="dayViewBtn">하루씩 보기</button>
+      <button id="weekViewBtn" class="tab-btn" data-i18n="weekViewBtn">이번 주 보기 (~수요일)</button>
     </section>
 
     <section id="dateNav" class="date-nav">
-      <button id="prevDayBtn" class="nav-btn">◀ 어제</button>
+      <button id="prevDayBtn" class="nav-btn" data-i18n="prevDayBtn">◀ 어제</button>
       <input type="date" id="dateInput" />
-      <button id="nextDayBtn" class="nav-btn">내일 ▶</button>
-      <button id="todayBtn" class="nav-btn today-btn">오늘</button>
+      <button id="nextDayBtn" class="nav-btn" data-i18n="nextDayBtn">내일 ▶</button>
+      <button id="todayBtn" class="nav-btn today-btn" data-i18n="todayBtn">오늘</button>
     </section>
 
     <section id="allergyWarning" class="allergy-warning hidden"></section>
 
     <section id="mealContainer" class="meal-container">
-      <p class="loading">급식 정보를 불러오는 중입니다...</p>
+      <p class="loading" data-i18n="loadingDay">급식 정보를 불러오는 중입니다...</p>
     </section>
 
     <section class="qr-section">
-      <h2>이 페이지 QR코드</h2>
-      <img id="qrImage" alt="현재 페이지 접속 QR코드" width="200" height="200" />
+      <h2 data-i18n="qrTitle">이 페이지 QR코드</h2>
+      <img id="qrImage" alt="현재 페이지 접속 QR코드" data-i18n-attr-alt="qrAlt" width="200" height="200" />
       <p id="qrUrl" class="qr-url"></p>
     </section>
 
     <section class="feedback-section">
-      <h2>💬 의견 남기기</h2>
-      <p>
+      <h2 data-i18n="feedbackTitle">💬 의견 남기기</h2>
+      <p data-i18n="feedbackDesc">
         사용하면서 불편한 점이나 개선 아이디어가 있다면 아래 설문에 남겨주세요.
       </p>
-      <a id="feedbackLink" href="#" target="_blank" rel="noopener noreferrer" class="feedback-btn">설문 참여하기</a>
+      <a id="feedbackLink" href="#" target="_blank" rel="noopener noreferrer" class="feedback-btn" data-i18n="feedbackBtn">설문 참여하기</a>
     </section>
   </main>
 
   <div id="settingsModal" class="modal hidden">
     <div class="modal-content">
-      <h2>내 알레르기 정보 설정</h2>
-      <p class="modal-desc">해당하는 항목을 체크하면, 급식 메뉴에 포함된 경우 빨간색으로 표시돼요.</p>
+      <h2 data-i18n="modalTitle">내 알레르기 정보 설정</h2>
+      <p class="modal-desc" data-i18n="modalDesc">해당하는 항목을 체크하면, 급식 메뉴에 포함된 경우 빨간색으로 표시돼요.</p>
       <div id="allergyList" class="allergy-list"></div>
       <div class="modal-actions">
-        <button id="saveAllergyBtn" class="primary-btn">저장</button>
-        <button id="closeModalBtn" class="secondary-btn">닫기</button>
+        <button id="saveAllergyBtn" class="primary-btn" data-i18n="saveBtn">저장</button>
+        <button id="closeModalBtn" class="secondary-btn" data-i18n="closeBtn">닫기</button>
       </div>
     </div>
   </div>
 
   <footer>
-    <p>급식 데이터 출처: 나이스(NEIS) 교육정보 개방 포털 · 서울특별시교육청 동성고등학교</p>
+    <p data-i18n="footer">급식 데이터 출처: 나이스(NEIS) 교육정보 개방 포털 · 서울특별시교육청 동성고등학교</p>
   </footer>
 
   <script src="script.js"></script>

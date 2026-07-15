@@ -6,28 +6,130 @@ const CONFIG = {
 
 // 설문(구글폼 등) 링크. 만들었다면 이 값을 실제 주소로 바꾸세요.
 const FEEDBACK_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc9eFweJns7M0HuS3N2dBDx8uKk9afu00E7-dee7DY2oc-c_Q/viewform?usp=publish-editor";
+
 const ALLERGY_MAP = {
-  1: "난류(계란)",
-  2: "우유",
-  3: "메밀",
-  4: "땅콩",
-  5: "대두",
-  6: "밀",
-  7: "고등어",
-  8: "게",
-  9: "새우",
-  10: "돼지고기",
-  11: "복숭아",
-  12: "토마토",
-  13: "아황산류",
-  14: "호두",
-  15: "닭고기",
-  16: "쇠고기",
-  17: "오징어",
-  18: "조개류(굴,전복,홍합 등)",
-  19: "잣",
+  ko: {
+    1: "난류(계란)",
+    2: "우유",
+    3: "메밀",
+    4: "땅콩",
+    5: "대두",
+    6: "밀",
+    7: "고등어",
+    8: "게",
+    9: "새우",
+    10: "돼지고기",
+    11: "복숭아",
+    12: "토마토",
+    13: "아황산류",
+    14: "호두",
+    15: "닭고기",
+    16: "쇠고기",
+    17: "오징어",
+    18: "조개류(굴,전복,홍합 등)",
+    19: "잣",
+  },
+  ru: {
+    1: "Яйца",
+    2: "Молоко",
+    3: "Гречиха",
+    4: "Арахис",
+    5: "Соя",
+    6: "Пшеница",
+    7: "Скумбрия",
+    8: "Крабы",
+    9: "Креветки",
+    10: "Свинина",
+    11: "Персик",
+    12: "Томаты",
+    13: "Сульфиты",
+    14: "Грецкий орех",
+    15: "Курица",
+    16: "Говядина",
+    17: "Кальмар",
+    18: "Моллюски (устрицы, морское ушко, мидии и т.д.)",
+    19: "Кедровые орехи",
+  },
 };
 
+const MEAL_TYPE_MAP = {
+  ru: {
+    "조식": "Завтрак",
+    "중식": "Обед",
+    "석식": "Ужин",
+  },
+};
+
+const WEEKDAY_LABELS = {
+  ko: ["일", "월", "화", "수", "목", "금", "토"],
+  ru: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
+};
+
+const MONTH_LABELS_RU = [
+  "янв.", "февр.", "март", "апр.", "май", "июнь",
+  "июль", "авг.", "сент.", "окт.", "нояб.", "дек.",
+];
+
+const TRANSLATIONS = {
+  ko: {
+    pageTitle: "동성고등학교 급식 알리미",
+    headerTitle: "🍽️ 동성고등학교 급식 알리미",
+    settingsBtn: "⚙️ 알레르기 설정",
+    langBtnLabel: "RU",
+    dayViewBtn: "하루씩 보기",
+    weekViewBtn: "이번 주 보기 (~수요일)",
+    prevDayBtn: "◀ 어제",
+    nextDayBtn: "내일 ▶",
+    todayBtn: "오늘",
+    qrTitle: "이 페이지 QR코드",
+    qrAlt: "현재 페이지 접속 QR코드",
+    feedbackTitle: "💬 의견 남기기",
+    feedbackDesc: "사용하면서 불편한 점이나 개선 아이디어가 있다면 아래 설문에 남겨주세요.",
+    feedbackBtn: "설문 참여하기",
+    modalTitle: "내 알레르기 정보 설정",
+    modalDesc: "해당하는 항목을 체크하면, 급식 메뉴에 포함된 경우 빨간색으로 표시돼요.",
+    saveBtn: "저장",
+    closeBtn: "닫기",
+    footer: "급식 데이터 출처: 나이스(NEIS) 교육정보 개방 포털 · 서울특별시교육청 동성고등학교",
+    loadingDay: "급식 정보를 불러오는 중입니다...",
+    loadingWeek: "이번 주 급식 정보를 불러오는 중입니다...",
+    errorLoad: "급식 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    emptyDay: "이 날짜에는 등록된 급식 정보가 없어요. (주말/방학/휴업일일 수 있어요)",
+    emptyWeek: "오늘부터 이번 주 수요일까지 등록된 급식 정보가 없어요.",
+    allergyWarning: "⚠️ 급식에 내가 설정한 알레르기 유발 식재료가 포함되어 있어요. 메뉴를 확인해 주세요.",
+    mealDefault: "급식",
+  },
+  ru: {
+    pageTitle: "Тонсон — школьное меню",
+    headerTitle: "🍽️ Школьное питание Тонсон",
+    settingsBtn: "⚙️ Аллергены",
+    langBtnLabel: "KO",
+    dayViewBtn: "По дням",
+    weekViewBtn: "На этой неделе (до среды)",
+    prevDayBtn: "◀ Вчера",
+    nextDayBtn: "Завтра ▶",
+    todayBtn: "Сегодня",
+    qrTitle: "QR-код этой страницы",
+    qrAlt: "QR-код для перехода на эту страницу",
+    feedbackTitle: "💬 Оставить отзыв",
+    feedbackDesc: "Если у вас есть неудобства или идеи по улучшению, поделитесь ими в опросе ниже.",
+    feedbackBtn: "Пройти опрос",
+    modalTitle: "Настройка моих аллергенов",
+    modalDesc: "Отметьте нужные пункты — соответствующие ингредиенты в меню будут выделены красным.",
+    saveBtn: "Сохранить",
+    closeBtn: "Закрыть",
+    footer: "Источник данных о питании: открытый портал NEIS · Департамент образования Сеула, школа Тонсон",
+    loadingDay: "Загрузка информации о питании...",
+    loadingWeek: "Загрузка информации о питании на неделю...",
+    errorLoad: "Не удалось загрузить информацию о питании. Попробуйте ещё раз позже.",
+    emptyDay: "На эту дату нет данных о питании. (возможно, выходной/каникулы/нерабочий день)",
+    emptyWeek: "Нет данных о питании с сегодняшнего дня до среды этой недели.",
+    allergyWarning: "⚠️ В меню есть ингредиенты, которые вы отметили как аллергены. Проверьте меню.",
+    mealDefault: "Питание",
+  },
+};
+
+const LANG_STORAGE_KEY = "dongsung-meal-lang";
 const STORAGE_KEY = "dongsung-meal-my-allergies";
 
 const els = {};
@@ -35,6 +137,42 @@ const els = {};
 let selectedDate = new Date();
 let myAllergies = loadMyAllergies();
 let viewMode = "day"; // "day" | "week"
+let currentLang = loadLang(); // "ko" | "ru"
+
+function loadLang() {
+  const saved = localStorage.getItem(LANG_STORAGE_KEY);
+  return saved === "ru" ? "ru" : "ko";
+}
+
+function t(key) {
+  return TRANSLATIONS[currentLang][key] ?? TRANSLATIONS.ko[key] ?? key;
+}
+
+function applyLanguage() {
+  document.documentElement.lang = currentLang === "ru" ? "ru" : "ko";
+  document.title = t("pageTitle");
+
+  document.querySelectorAll("[data-i18n]").forEach((node) => {
+    node.textContent = t(node.getAttribute("data-i18n"));
+  });
+  document.querySelectorAll("[data-i18n-attr-alt]").forEach((node) => {
+    node.setAttribute("alt", t(node.getAttribute("data-i18n-attr-alt")));
+  });
+
+  if (els.langBtn) els.langBtn.textContent = t("langBtnLabel");
+}
+
+function setLanguage(lang) {
+  currentLang = lang === "ru" ? "ru" : "ko";
+  localStorage.setItem(LANG_STORAGE_KEY, currentLang);
+  applyLanguage();
+  buildAllergyCheckboxes();
+  if (viewMode === "week") {
+    loadWeekMeals();
+  } else {
+    loadMeals();
+  }
+}
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -56,6 +194,11 @@ function init() {
   els.qrImage = document.getElementById("qrImage");
   els.qrUrl = document.getElementById("qrUrl");
   els.feedbackLink = document.getElementById("feedbackLink");
+  els.langBtn = document.getElementById("langBtn");
+
+  els.langBtn.addEventListener("click", () => {
+    setLanguage(currentLang === "ko" ? "ru" : "ko");
+  });
 
   els.dateInput.value = formatDateForInput(selectedDate);
 
@@ -86,6 +229,7 @@ function init() {
 
   els.feedbackLink.href = FEEDBACK_FORM_URL;
 
+  applyLanguage();
   buildAllergyCheckboxes();
   setupQrCode();
   loadMeals();
@@ -124,7 +268,7 @@ function formatDateForApi(date) {
 }
 
 async function loadMeals() {
-  els.mealContainer.innerHTML = `<p class="loading">급식 정보를 불러오는 중입니다...</p>`;
+  els.mealContainer.innerHTML = `<p class="loading">${escapeHtml(t("loadingDay"))}</p>`;
   els.allergyWarning.classList.add("hidden");
 
   const ymd = formatDateForApi(selectedDate);
@@ -142,7 +286,7 @@ async function loadMeals() {
     renderMeals(data);
   } catch (err) {
     console.error(err);
-    els.mealContainer.innerHTML = `<p class="error">급식 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>`;
+    els.mealContainer.innerHTML = `<p class="error">${escapeHtml(t("errorLoad"))}</p>`;
   }
 }
 
@@ -150,7 +294,7 @@ function renderMeals(data) {
   const rows = extractRows(data);
 
   if (!rows || rows.length === 0) {
-    els.mealContainer.innerHTML = `<p class="empty">이 날짜에는 등록된 급식 정보가 없어요. (주말/방학/휴업일일 수 있어요)</p>`;
+    els.mealContainer.innerHTML = `<p class="empty">${escapeHtml(t("emptyDay"))}</p>`;
     return;
   }
 
@@ -170,7 +314,7 @@ function renderMeals(data) {
 }
 
 async function loadWeekMeals() {
-  els.mealContainer.innerHTML = `<p class="loading">이번 주 급식 정보를 불러오는 중입니다...</p>`;
+  els.mealContainer.innerHTML = `<p class="loading">${escapeHtml(t("loadingWeek"))}</p>`;
   els.allergyWarning.classList.add("hidden");
 
   const today = new Date();
@@ -192,7 +336,7 @@ async function loadWeekMeals() {
     renderWeekMeals(data);
   } catch (err) {
     console.error(err);
-    els.mealContainer.innerHTML = `<p class="error">급식 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>`;
+    els.mealContainer.innerHTML = `<p class="error">${escapeHtml(t("errorLoad"))}</p>`;
   }
 }
 
@@ -200,7 +344,7 @@ function renderWeekMeals(data) {
   const rows = extractRows(data);
 
   if (!rows || rows.length === 0) {
-    els.mealContainer.innerHTML = `<p class="empty">오늘부터 이번 주 수요일까지 등록된 급식 정보가 없어요.</p>`;
+    els.mealContainer.innerHTML = `<p class="empty">${escapeHtml(t("emptyWeek"))}</p>`;
     return;
   }
 
@@ -259,7 +403,7 @@ function buildMealCardHtml(row) {
 
   const html = `
     <article class="meal-card">
-      <h3>${escapeHtml(row.MMEAL_SC_NM || "급식")}</h3>
+      <h3>${escapeHtml(translateMealType(row.MMEAL_SC_NM) || t("mealDefault"))}</h3>
       <ul class="dish-list">${dishItemsHtml}</ul>
       <p class="meal-meta">${escapeHtml(row.CAL_INFO || "")}</p>
     </article>
@@ -268,10 +412,15 @@ function buildMealCardHtml(row) {
   return { html, warn };
 }
 
+function translateMealType(name) {
+  if (!name) return name;
+  const map = MEAL_TYPE_MAP[currentLang];
+  return (map && map[name]) || name;
+}
+
 function showAllergyWarning(anyWarn) {
   if (anyWarn && myAllergies.size > 0) {
-    els.allergyWarning.textContent =
-      "⚠️ 급식에 내가 설정한 알레르기 유발 식재료가 포함되어 있어요. 메뉴를 확인해 주세요.";
+    els.allergyWarning.textContent = t("allergyWarning");
     els.allergyWarning.classList.remove("hidden");
   } else {
     els.allergyWarning.classList.add("hidden");
@@ -286,14 +435,17 @@ function getThisOrNextWednesday(from) {
   return d;
 }
 
-const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
-
 function formatYmdLabel(ymd) {
   const y = Number(ymd.slice(0, 4));
   const m = Number(ymd.slice(4, 6));
   const d = Number(ymd.slice(6, 8));
   const date = new Date(y, m - 1, d);
-  return `${m}월 ${d}일 (${WEEKDAY_LABELS[date.getDay()]})`;
+  const weekday = WEEKDAY_LABELS[currentLang][date.getDay()];
+
+  if (currentLang === "ru") {
+    return `${d} ${MONTH_LABELS_RU[m - 1]} (${weekday})`;
+  }
+  return `${m}월 ${d}일 (${weekday})`;
 }
 
 function extractRows(data) {
@@ -317,7 +469,7 @@ function parseDishes(ddishNm) {
         const codes = match[2]
           .split(".")
           .map((n) => Number(n.trim()))
-          .filter((n) => Number.isInteger(n) && ALLERGY_MAP[n]);
+          .filter((n) => Number.isInteger(n) && ALLERGY_MAP.ko[n]);
         return { name, codes };
       }
       return { name: line, codes: [] };
@@ -350,7 +502,7 @@ function saveMyAllergies(set) {
 }
 
 function buildAllergyCheckboxes() {
-  els.allergyList.innerHTML = Object.entries(ALLERGY_MAP)
+  els.allergyList.innerHTML = Object.entries(ALLERGY_MAP[currentLang])
     .map(
       ([code, name]) => `
         <label class="allergy-item">
