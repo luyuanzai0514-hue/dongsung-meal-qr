@@ -311,6 +311,7 @@ function renderMeals(data) {
 
   els.mealContainer.innerHTML = cardsHtml;
   showAllergyWarning(anyWarn);
+  applyDishTranslations();
 }
 
 async function loadWeekMeals() {
@@ -383,6 +384,7 @@ function renderWeekMeals(data) {
 
   els.mealContainer.innerHTML = groupsHtml;
   showAllergyWarning(anyWarn);
+  applyDishTranslations();
 }
 
 function buildMealCardHtml(row) {
@@ -395,9 +397,9 @@ function buildMealCardHtml(row) {
       const codeText = dish.codes.length
         ? ` <span class="allergy-code">(${dish.codes.join(".")})</span>`
         : "";
-      return `<li class="${isWarn ? "warn" : ""}">${escapeHtml(dish.name)}${codeText}${
-        isWarn ? " ⚠️" : ""
-      }</li>`;
+      return `<li class="${isWarn ? "warn" : ""}"><span class="dish-name" data-ko-name="${escapeHtml(
+        dish.name
+      )}">${escapeHtml(dish.name)}</span>${codeText}${isWarn ? " ⚠️" : ""}</li>`;
     })
     .join("");
 
@@ -416,6 +418,67 @@ function translateMealType(name) {
   if (!name) return name;
   const map = MEAL_TYPE_MAP[currentLang];
   return (map && map[name]) || name;
+}
+
+// ====== 급식 메뉴 이름 러시아어 번역 ======
+const DISH_TR_STORAGE_KEY = "dongsung-meal-dish-tr-ru";
+const dishTranslationCache = loadDishTranslationCache();
+
+function loadDishTranslationCache() {
+  try {
+    const raw = localStorage.getItem(DISH_TR_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveDishTranslationCache() {
+  try {
+    localStorage.setItem(DISH_TR_STORAGE_KEY, JSON.stringify(dishTranslationCache));
+  } catch {
+    // 저장 공간 부족 등은 무시
+  }
+}
+
+async function translateDishName(koName) {
+  if (dishTranslationCache[koName]) return dishTranslationCache[koName];
+
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+    koName
+  )}&langpair=ko|ru`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  const translated = data?.responseData?.translatedText;
+  if (!translated) throw new Error("no translation");
+
+  dishTranslationCache[koName] = translated;
+  saveDishTranslationCache();
+  return translated;
+}
+
+async function applyDishTranslations() {
+  if (currentLang !== "ru") return;
+
+  const spans = [...els.mealContainer.querySelectorAll(".dish-name[data-ko-name]")];
+  const uniqueNames = [...new Set(spans.map((el) => el.getAttribute("data-ko-name")))];
+
+  await Promise.all(
+    uniqueNames.map(async (name) => {
+      try {
+        await translateDishName(name);
+      } catch (err) {
+        console.error("dish translation failed:", name, err);
+      }
+    })
+  );
+
+  spans.forEach((el) => {
+    const koName = el.getAttribute("data-ko-name");
+    const translated = dishTranslationCache[koName];
+    if (translated) el.textContent = translated;
+  });
 }
 
 function showAllergyWarning(anyWarn) {
