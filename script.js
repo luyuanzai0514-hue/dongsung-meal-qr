@@ -421,37 +421,121 @@ function translateMealType(name) {
 }
 
 // ====== 급식 메뉴 이름 러시아어 번역 ======
-const DISH_TR_STORAGE_KEY = "dongsung-meal-dish-tr-ru";
+// v2: 번역 품질 문제(원산지 표기 오역, 영어 누출)를 고쳤으므로 기존 캐시는 폐기
+const DISH_TR_STORAGE_KEY = "dongsung-meal-dish-tr-ru-v2";
 const dishTranslationCache = loadDishTranslationCache();
 
-function loadDishTranslationCache() {
-  try {
-    const raw = localStorage.getItem(DISH_TR_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
+// NEIS 급식 데이터에는 원산지 표시제로 인해 "국내산", "미국산" 같은 표기가
+// 메뉴 이름에 붙는데, 기계번역이 이걸 엉뚱하게 옮기는 경우가 많아 따로 떼어
+// 처리한다 (예: "국내산 장어강정" -> "Внутренний угорь Gangjeong").
+const ORIGIN_LABEL_MAP = {
+  "국내산": "отечественный",
+  "국산": "отечественный",
+  "미국산": "США",
+  "호주산": "Австралия",
+  "뉴질랜드산": "Новая Зеландия",
+  "캐나다산": "Канада",
+  "중국산": "Китай",
+  "브라질산": "Бразилия",
+  "노르웨이산": "Норвегия",
+  "러시아산": "Россия",
+  "베트남산": "Вьетнам",
+  "칠레산": "Чили",
+  "페루산": "Перу",
+  "필리핀산": "Филиппины",
+  "아르헨티나산": "Аргентина",
+  "일본산": "Япония",
+  "태국산": "Таиланд",
+};
+
+// 기계번역 품질이 낮아(한국 음식 이름을 엉뚱하게 옮기는 경우가 많음) 실제
+// 급식에 자주 나오는 메뉴는 직접 확인한 번역을 우선 사용한다. 공백 유무와
+// 무관하게 매칭되도록 normalizeDishKey를 거친 값을 키로 쓴다.
+const DISH_TRANSLATION_OVERRIDES = {
+  "칼슘백미밥": "Белый рис с кальцием",
+  "초당옥수수크림소보루": "Кукуруза «чодан» со сливочной крошкой",
+  "얼큰버섯샤브국": "Острый грибной суп шабу-шабу",
+  "매콤콩나물무침": "Острый салат из ростков сои",
+  "닭살바베큐볶음": "Жареное куриное филе барбекю",
+  "배추김치": "Кимчи из пекинской капусты",
+  "배추김지": "Кимчи из пекинской капусты",
+  "오렌지": "Апельсин",
+  "칼슘흑미밥": "Чёрный рис с кальцием",
+  "닭장각삼계탕": "Самгетхан с куриной голенью",
+  "아삭이고추무침": "Салат из хрустящего перца",
+  "장어강정": "Угорь гангджон",
+  "한입녹두전": "Мини-блинчики из бобов мунг",
+  "깍두기": "Ккактуги (кимчи из редьки)",
+  "수제수박화채": "Домашний арбузный хвачхэ",
+  "후리카케밥": "Рис с фурикакэ",
+  "미니잔치국수": "Мини-лапша чанчхигуксу",
+  "감자핫도그&케찹": "Картофельный хот-дог с кетчупом",
+  "오이양파무침": "Салат из огурцов и лука",
+  "너비아니육원전": "Говяжьи котлеты «нобиани»",
+  "바나나우유": "Банановое молоко",
+};
+
+function normalizeDishKey(name) {
+  return name.replace(/\s+/g, "");
 }
 
-function saveDishTranslationCache() {
-  try {
-    localStorage.setItem(DISH_TR_STORAGE_KEY, JSON.stringify(dishTranslationCache));
-  } catch {
-    // 저장 공간 부족 등은 무시
+function extractOriginLabel(name) {
+  const labels = Object.keys(ORIGIN_LABEL_MAP).sort((a, b) => b.length - a.length);
+  const alt = labels.join("|");
+  let label = null;
+  let cleaned = name
+    .replace(new RegExp(`\\((?:${alt})\\)`, "g"), () => {
+      return "";
+    })
+    .replace(new RegExp(`^(${alt})\\s*`), (full, l) => {
+      label = l;
+      return "";
+    })
+    .trim();
+
+  if (!label) {
+    const parenMatch = name.match(new RegExp(`\\((${alt})\\)`));
+    if (parenMatch) label = parenMatch[1];
   }
+
+  // "(완)", "(반제품)" 같이 원산지가 아닌 자잘한 괄호 표기도 번역에 방해가
+  // 되므로 마지막에 남은 괄호 표기는 통째로 제거한다.
+  cleaned = cleaned
+    .replace(/\([^)]*\)\s*$/, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+  return { cleaned: cleaned || name, label };
+}
+
+function containsCyrillic(text) {
+  return /[а-яёА-ЯЁ]/.test(text);
 }
 
 async function translateDishName(koName) {
   if (dishTranslationCache[koName]) return dishTranslationCache[koName];
 
-  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-    koName
-  )}&langpair=ko|ru`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  const translated = data?.responseData?.translatedText;
-  if (!translated) throw new Error("no translation");
+  const { cleaned, label } = extractOriginLabel(koName);
+
+  let translated = DISH_TRANSLATION_OVERRIDES[normalizeDishKey(cleaned)];
+  if (!translated) {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+      cleaned
+    )}&langpair=ko|ru`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    translated = data?.responseData?.translatedText;
+    if (!translated || !containsCyrillic(translated)) {
+      // 러시아어가 아닌 결과(영어 누출 등)는 신뢰하지 않고 실패로 처리 →
+      // 원래 한국어 이름을 그대로 보여준다.
+      throw new Error(`low-quality translation for "${cleaned}": ${translated}`);
+    }
+  }
+
+  if (label && ORIGIN_LABEL_MAP[label]) {
+    translated = `${translated} (${ORIGIN_LABEL_MAP[label]})`;
+  }
 
   dishTranslationCache[koName] = translated;
   saveDishTranslationCache();
