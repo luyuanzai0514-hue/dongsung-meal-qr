@@ -423,7 +423,29 @@ function translateMealType(name) {
 // ====== 급식 메뉴 이름 러시아어 번역 ======
 // v2: 번역 품질 문제(원산지 표기 오역, 영어 누출)를 고쳤으므로 기존 캐시는 폐기
 const DISH_TR_STORAGE_KEY = "dongsung-meal-dish-tr-ru-v2";
-const dishTranslationCache = loadDishTranslationCache();
+// 최초 사용 시점에만 localStorage에서 불러오도록 지연 초기화한다.
+let dishTranslationCache = null;
+function getDishTranslationCache() {
+  if (!dishTranslationCache) dishTranslationCache = loadDishTranslationCache();
+  return dishTranslationCache;
+}
+
+function loadDishTranslationCache() {
+  try {
+    const raw = localStorage.getItem(DISH_TR_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveDishTranslationCache() {
+  try {
+    localStorage.setItem(DISH_TR_STORAGE_KEY, JSON.stringify(dishTranslationCache));
+  } catch {
+    // 저장 공간 부족 등은 무시
+  }
+}
 
 // NEIS 급식 데이터에는 원산지 표시제로 인해 "국내산", "미국산" 같은 표기가
 // 메뉴 이름에 붙는데, 기계번역이 이걸 엉뚱하게 옮기는 경우가 많아 따로 떼어
@@ -515,7 +537,8 @@ function containsCyrillic(text) {
 }
 
 async function translateDishName(koName) {
-  if (dishTranslationCache[koName]) return dishTranslationCache[koName];
+  const cache = getDishTranslationCache();
+  if (cache[koName]) return cache[koName];
 
   const { cleaned, label } = extractOriginLabel(koName);
 
@@ -539,7 +562,7 @@ async function translateDishName(koName) {
     translated = `${translated} (${ORIGIN_LABEL_MAP[label]})`;
   }
 
-  dishTranslationCache[koName] = translated;
+  cache[koName] = translated;
   saveDishTranslationCache();
   return translated;
 }
@@ -560,9 +583,10 @@ async function applyDishTranslations() {
     })
   );
 
+  const cache = getDishTranslationCache();
   spans.forEach((el) => {
     const koName = el.getAttribute("data-ko-name");
-    const translated = dishTranslationCache[koName];
+    const translated = cache[koName];
     if (translated) el.textContent = translated;
   });
 }
